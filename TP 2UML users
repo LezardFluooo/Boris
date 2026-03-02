@@ -1,0 +1,23 @@
+@startuml
+title Utilisateur et Poste de Travail
+
+class Utilisateur {
+    - String nom
+    - String prenom
+    - String role
+    + void seConnecter()
+    + void envoyerDonnees(String message)
+}
+
+class PosteDeTravail {
+    - String nomMachine
+    - String adresseIP
+    - String adresseMAC
+    + void demarrer()
+    + void arreter()
+}
+
+' Association : Un utilisateur utilise un poste de travail
+Utilisateur "1" -- "0..1" PosteDeTravail : utilise >
+
+@enduml

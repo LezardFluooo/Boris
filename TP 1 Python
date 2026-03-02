@@ -1,0 +1,61 @@
+class IPPacket:
+    def __init__(self, ip_src, ip_dest, data=""):
+        self.ip_src = ip_src
+        self.ip_dest = ip_dest
+        self.data = data
+
+class EthernetFrame:
+    def __init__(self, mac_src, mac_dest, payload=None):
+        self.mac_src = mac_src
+        self.mac_dest = mac_dest
+        self.payload = payload  # Peut être un IPPacket
+
+class L2Switch:
+    def __init__(self, name):
+        self.name = name
+        self.mac_table = {}  # {MAC: Port}
+
+    def update_mac_table(self, mac, port):
+        self.mac_table[mac] = port
+
+    def forward(self, frame):
+        print(f"[{self.name} L2] Analyse de la trame MAC: {frame.mac_dest}")
+        if frame.mac_dest in self.mac_table:
+            print(f" -> Transmission sur le port {self.mac_table[frame.mac_dest]}")
+        else:
+            print(" -> Diffusion (Flooding) sur tous les ports")
+
+class L3Switch(L2Switch):
+    def __init__(self, name):
+        super().__init__(name)
+        self.routing_table = {}  # {Network: NextHop/Interface}
+
+    def add_route(self, network, next_hop):
+        self.routing_table[network] = next_hop
+
+    def route(self, packet):
+        """Logique spécifique L3 (Principe de Responsabilité Unique)"""
+        print(f"[{self.name} L3] Routage du paquet vers l'IP: {packet.ip_dest}")
+        # Simulation d'une recherche de route
+        return True
+
+    def forward(self, frame):
+        """
+        Surcharge polymorphe (SOLID - Liskov Substitution).
+        Le switch décide s'il commute (L2) ou s'il route (L3).
+        """
+        # Si la destination MAC est celle du switch (Gateway), on regarde l'IP
+        if frame.mac_dest == "GATEWAY_MAC" and isinstance(frame.payload, IPPacket):
+            print(f"[{self.name}] Trame destinée à la Gateway. Passage au Niveau 3.")
+            self.route(frame.payload)
+        else:
+            # Comportement homonyme : on délègue au parent si c'est du pur L2
+            super().forward(frame)
+
+# --- Test du scénario ---
+# Création du "Coeur de Réseau" du schéma
+core_switch = L3Switch("Coeur_3650")
+packet = IPPacket("192.168.20.10", "192.168.22.10", "Hello CEO")
+trame = EthernetFrame("MAC_NATHAN", "GATEWAY_MAC", payload=packet)
+
+core_switch.forward(trame)

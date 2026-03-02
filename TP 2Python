@@ -1,0 +1,17 @@
+class User:
+    def __init__(self, nom, prenom, role):
+        self.nom = nom
+        self.prenom = prenom
+        self.role = role
+        self.poste = None  # Association avec PosteDeTravail
+
+    def se_connecter(self):
+        status = f" sur {self.poste.nom_machine}" if self.poste else ""
+        print(f"[Python] {self.prenom} {self.nom} ({self.role}) est connecté{status}.")
+
+    def assigner_poste(self, poste):
+        self.poste = poste
+
+# Exemple d'usage
+nathan = User("Nathan", "Reseau", "Technicien")
+nathan.se_connecter()

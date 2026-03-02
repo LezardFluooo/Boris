@@ -1,0 +1,25 @@
+#include <iostream>
+#include <string>
+
+class User {
+private:
+    std::string nom;
+    std::string prenom;
+    std::string role;
+
+public:
+    // Constructeur
+    User(std::string n, std::string p, std::string r) 
+        : nom(n), prenom(p), role(r) {}
+
+    void seConnecter() {
+        std::cout << "[C++] " << prenom << " " << nom 
+                  << " (" << role << ") est connecte." << std::endl;
+    }
+};
+
+int main() {
+    User nathan("Nathan", "Reseau", "Technicien");
+    nathan.seConnecter();
+    return 0;
+}

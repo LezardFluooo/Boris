@@ -1,0 +1,39 @@
+@startuml
+title Diagramme de Classe - SI Réseau (L2/L3)
+
+class EthernetFrame {
+    + String macDest
+    + String macSrc
+    + String etherType
+    + IPPacket payload
+    + int crc
+}
+
+class IPPacket {
+    + String ipDest
+    + String ipSrc
+    + int ttl
+    + String protocol
+    + String data
+}
+
+abstract class L2Switch {
+    # Map<String, String> macTable
+    + void forward(EthernetFrame frame)
+    + void updateMacTable(String mac, String port)
+}
+
+class L3Switch {
+    - Map<String, String> routingTable
+    + void forward(EthernetFrame frame)
+    + void route(IPPacket packet)
+    - String findNextHop(String ipDest)
+}
+
+' Associations
+EthernetFrame "1" o-- "0..1" IPPacket : encapsule >
+L2Switch <|-- L3Switch : hérite de
+L2Switch ..> EthernetFrame : traite >
+L3Switch ..> IPPacket : analyse >
+
+@enduml
